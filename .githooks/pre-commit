@@ -1,0 +1,24 @@
+#!/bin/sh
+# Safety net on top of .gitignore: refuse to commit anything that looks like health data,
+# even if it was force-added (git add -f).
+fail=0
+for f in $(git diff --cached --name-only --diff-filter=ACMR); do
+  case "$f" in
+    config/cycles.example.csv|reports/public/*.csv) ;;           # allowed
+    data/README.md) ;;
+    data/*|reports/private/*|config/*)
+      echo "BLOCKED (private path): $f"; fail=1 ;;
+    *.csv|*.xml|*.zip|*.parquet|*.pkl|*.db|*.sqlite|*.ipynb)
+      echo "BLOCKED (data file type): $f"; fail=1 ;;
+  esac
+done
+# Per-participant mcPHASES rows must never be committed, even inside an allowed CSV.
+for f in $(git diff --cached --name-only --diff-filter=ACMR -- 'reports/public/*.csv'); do
+  if git show ":$f" | head -1 | tr ',' '\n' | grep -qx 'id'; then
+    echo "BLOCKED (has a participant id column): $f"; fail=1
+  fi
+done
+if [ $fail -ne 0 ]; then
+  echo "Commit refused: health data must stay local. See README > Privacy."
+  exit 1
+fi

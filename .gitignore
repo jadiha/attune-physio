@@ -1,0 +1,38 @@
+# ---------------------------------------------------------------
+# PRIVACY: nothing personal and nothing from mcPHASES leaves this machine.
+# mcPHASES is under the PhysioNet Restricted Health Data License:
+# the raw data may not be shared with anyone, including via a private repo.
+# ---------------------------------------------------------------
+
+# All data (raw links, processed tables)
+data/*
+!data/README.md
+
+# Your real period dates. Only the example file is tracked.
+config/*
+!config/cycles.example.csv
+
+# Reports: private by default. Only aggregate, non-personal outputs go in reports/public/.
+reports/private/
+
+# Any stray data file anywhere in the repo
+*.xml
+*.zip
+*.parquet
+*.pkl
+*.sqlite
+*.db
+*.csv
+!config/cycles.example.csv
+!reports/public/*.csv
+
+# Notebooks can hide data in their outputs. Strip outputs before committing, or keep them local.
+*.ipynb
+!notebooks/*.clean.ipynb
+
+# Python / env
+.venv/
+__pycache__/
+*.egg-info/
+.env
+.DS_Store
